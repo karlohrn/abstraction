@@ -64,40 +64,46 @@ void user_delete_key(Node list){
     printf("Could not find an entry matching key \"%s\"!\n", key);
 }
 
-Node backside_insert_key(Node list, char* buffer){
+int cheak_for_key(Node list, char* buffer){
   int found = 0;
   Node cursor = list;
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
-      printf("key \"%s\" already exists!\n", cursor->key);
       found = 1;
     }else{
       cursor = cursor->next;
     }
   }
-  if(!found){ // Insert new node to the front of the list
-    puts("Key is unique!\n");
-    Node newNode = malloc(sizeof(struct node));
-    newNode->key = malloc(strlen(buffer) + 1);
-    strcpy(newNode->key, buffer);
-    printf("Enter value: ");
+  return 0;
+}
+
+Node db_insert_key(Node list, char* buffer){
+  Node newNode = malloc(sizeof(struct node));
+  newNode->key = malloc(strlen(buffer) + 1);
+  strcpy(newNode->key, buffer);
     readline(buffer, 128, stdin);
     newNode->value = malloc(strlen(buffer) + 1);
     strcpy(newNode->value, buffer);
     newNode->next = list;
-    puts("");
-    puts("Entry inserted successfully:");
-    printf("key: %s\nvalue: %s\n", list->key, list->value);
     return newNode;
-  }
-  return list;
 }
 
 Node user_insert_key(Node list){
   printf("Enter key: ");
   char* buffer = read_buffer();
   puts("Searching database for duplicate keys...");
-  return backside_insert_key(list, buffer);
+  int found  = cheak_for_key(list, buffer);
+  if(found == 0){
+    puts("Key is unique!\n");
+    printf("Enter value: ");
+    Node newNode = db_insert_key(list, buffer);
+    puts("");
+    puts("Entry inserted successfully:");
+    printf("key: %s\nvalue: %s\n", list->key, list->value);
+    return newNode;
+  }
+  printf("key \"%s\" already exists!\n", buffer);
+  return list;
 }
 
 
