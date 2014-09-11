@@ -64,17 +64,19 @@ void user_delete_key(Node list){
     printf("Could not find an entry matching key \"%s\"!\n", key);
 }
 
-int cheak_for_key(Node list, char* buffer){
+Node cheak_for_key(Node list, char* buffer){
   int found = 0;
   Node cursor = list;
+  Node value = NULL;
   while(!found && cursor != NULL){
     if(strcmp(buffer, cursor->key) == 0){
+      value = cursor;
       found = 1;
     }else{
       cursor = cursor->next;
     }
   }
-  return 0;
+  return value;
 }
 
 Node db_insert_key(Node list, char* buffer){
@@ -92,8 +94,8 @@ Node user_insert_key(Node list){
   printf("Enter key: ");
   char* buffer = read_buffer();
   puts("Searching database for duplicate keys...");
-  int found  = cheak_for_key(list, buffer);
-  if(found == 0){
+  Node found  = cheak_for_key(list, buffer);
+  if(found != NULL){
     puts("Key is unique!\n");
     printf("Enter value: ");
     Node newNode = db_insert_key(list, buffer);
@@ -106,31 +108,27 @@ Node user_insert_key(Node list){
   return list;
 }
 
-
-void update_key(Node list){
-  int found = 0;
+void db_update_value(Node list, char* value){
   Node cursor = list;
+  free(cursor->value);
+  cursor->value = malloc(strlen(value) + 1);
+  strcpy(cursor->value, value);
+}
+
+void user_update_key(Node list){
   printf("Enter key: ");
-  char* buffer = read_buffer();
+  char* key = read_buffer();
+  Node value = cheak_for_key(list, key);
   puts("Searching database...\n");
-  while(!found && cursor != NULL){
-    if(strcmp(buffer, cursor->key) == 0){
-      puts("Matching entry found:");
-      printf("key: %s\nvalue: %s\n\n", cursor->key, cursor->value);
-      found = 1;
-    }else{
-      cursor = cursor->next;
-    }
-  }
-  if(!found){
-    printf("Could not find an entry matching key \"%s\"!\n", buffer);
-  }else{
+  if(value != NULL){
+    puts("Matching entry found:");
+    printf("key: %s\nvalue: %s\n\n", key, value->value);
     printf("Enter new value: ");
-    readline(buffer, 128, stdin);
-    free(cursor->value);
-    cursor->value = malloc(strlen(buffer) + 1);
-    strcpy(cursor->value, buffer);
+    char* new_value = read_buffer();
+    db_update_value(value, new_value);
     puts("Value inserted successfully!");
+  }else{
+    printf("Could not find an entry matching key \"%s\"!\n", key);
   }
 }
 
@@ -215,7 +213,7 @@ int main(int argc, char *argv[]){
       query_key(list);
       break;
     case 2:
-      update_key(list);
+      user_update_key(list);
       break;
     case 3:
       list = user_insert_key(list);
