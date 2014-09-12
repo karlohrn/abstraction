@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "db_back.h"
+/*
 typedef struct node{
   char *key;
   char *value;
@@ -68,7 +69,7 @@ char* db_delete_key(Node list, char*key){
   }
   return value;
 }
-
+*/
 void user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
@@ -81,7 +82,7 @@ void user_delete_key(Node list){
   }else 
     printf("Could not find an entry matching key \"%s\"!\n", key);
 }
-
+/*
 Node db_insert_key(Node list, char* buffer){
   Node newNode = malloc(sizeof(struct node));
   newNode->key = malloc(strlen(buffer) + 1);
@@ -92,7 +93,7 @@ Node db_insert_key(Node list, char* buffer){
     newNode->next = list;
     return newNode;
 }
-
+*/
 Node user_insert_key(Node list){
   printf("Enter key: ");
   char* buffer = read_buffer();
@@ -110,14 +111,14 @@ Node user_insert_key(Node list){
   printf("key \"%s\" already exists!\n", buffer);
   return list;
 }
-
+/*
 void db_update_value(Node list, char* value){
   Node cursor = list;
   free(cursor->value);
   cursor->value = malloc(strlen(value) + 1);
   strcpy(cursor->value, value);
 }
-
+*/
 void user_update_key(Node list){
   printf("Enter key: ");
   char* key = read_buffer();
@@ -148,7 +149,7 @@ void user_query_key(Node list){
     printf("Could not find an entry matching key \"%s\"!\n", buffer);
   }
 }
-
+/*
 void welcome(){
   puts("Welcome to");
   puts(" ____    ____       ");
@@ -179,6 +180,7 @@ Node load_database(char *filename){
   }
   return list;
 }
+*/
 int main(int argc, char *argv[]){
   if (argc < 2){
     puts("Usage: db [FILE]");

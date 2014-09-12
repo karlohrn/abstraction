@@ -56,7 +56,7 @@ char* db_delete_key(Node list, char*key){
       value = cursor->value;
       if(prev == NULL){ // Delete first node
         list = cursor->next;
-	return (char*) list->value;
+	return list->value;
       }else{
         prev->next = cursor->next;
       }
