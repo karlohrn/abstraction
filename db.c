@@ -3,19 +3,19 @@
 #include <string.h>
 #include "db_back.h"
 
-void user_delete_key(Node list){
+Node user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
   puts("Searching database...\n");
-
-
-  //Node value = cheak_for_key(list, key);
-  //vet inte hur jag ska använda cheak_for value() trots att jag ska hitta noden.
-  char* value = db_delete_key(list, key);
+  Node value = cheak_for_key(list, key);
   if(value != NULL){
-    printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, value);
+    char* old_value = value->value;
+    Node new_list = db_delete_key(list, key);
+    printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, old_value);
+    return new_list;
   }else 
     printf("Could not find an entry matching key \"%s\"!\n", key);
+  return list;
 }
 
 Node user_insert_key(Node list){
@@ -81,6 +81,10 @@ int main(int argc, char *argv[]){
 
   // Main loop
 
+  for(int i = 10; i> 0; i--){
+    puts("hey");
+  }
+
   int choice = -1;
   while(choice != 0){
     puts("Please choose an operation");
@@ -104,7 +108,7 @@ int main(int argc, char *argv[]){
       list = user_insert_key(list);
       break;
     case 4:
-      user_delete_key(list);
+      list = user_delete_key(list);
       break;
     case 5:
       print_database(list);
