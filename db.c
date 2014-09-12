@@ -7,6 +7,8 @@ void user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
   puts("Searching database...\n");
+
+
   //Node value = cheak_for_key(list, key);
   //vet inte hur jag ska använda cheak_for value() trots att jag ska hitta noden.
   char* value = db_delete_key(list, key);
