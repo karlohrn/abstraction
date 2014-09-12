@@ -105,7 +105,7 @@ Node user_insert_key(Node list){
     Node newNode = db_insert_key(list, buffer);
     puts("");
     puts("Entry inserted successfully:");
-    printf("key: %s\nvalue: %s\n", list->key, list->value);
+    printf("key: %s\nvalue: %s\n", newNode->key, newNode->value);
     return newNode;
   }
   printf("key \"%s\" already exists!\n", buffer);
