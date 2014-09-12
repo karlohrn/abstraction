@@ -30,7 +30,23 @@ char* read_buffer(){
   buffer[128] = '\0';
   return buffer;
 }
-  
+ 
+
+Node cheak_for_key(Node list, char* buffer){
+  int found = 0;
+  Node cursor = list;
+  Node value = NULL;
+  while(!found && cursor != NULL){
+    if(strcmp(buffer, cursor->key) == 0){
+      value = cursor;
+      found = 1;
+    }else{
+      cursor = cursor->next;
+    }
+  }
+  return value;
+}
+ 
 char* db_delete_key(Node list, char*key){
   int found = 0;
   Node cursor = list;
@@ -57,26 +73,13 @@ void user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
   puts("Searching database...\n");
+  //Node value = cheak_for_key(list, key);
+  //vet inte hur jag ska använda cheak_for value() trots att jag ska hitta noden.
   char* value = db_delete_key(list, key);
   if(value != NULL){
     printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, value);
   }else 
     printf("Could not find an entry matching key \"%s\"!\n", key);
-}
-
-Node cheak_for_key(Node list, char* buffer){
-  int found = 0;
-  Node cursor = list;
-  Node value = NULL;
-  while(!found && cursor != NULL){
-    if(strcmp(buffer, cursor->key) == 0){
-      value = cursor;
-      found = 1;
-    }else{
-      cursor = cursor->next;
-    }
-  }
-  return value;
 }
 
 Node db_insert_key(Node list, char* buffer){
@@ -95,7 +98,7 @@ Node user_insert_key(Node list){
   char* buffer = read_buffer();
   puts("Searching database for duplicate keys...");
   Node found  = cheak_for_key(list, buffer);
-  if(found != NULL){
+  if(found == NULL){
     puts("Key is unique!\n");
     printf("Enter value: ");
     Node newNode = db_insert_key(list, buffer);
@@ -132,22 +135,16 @@ void user_update_key(Node list){
   }
 }
 
-void query_key(Node list){
+void user_query_key(Node list){
   printf("Enter key: ");
   char* buffer = read_buffer();
   puts("Searching database...\n");
-  int found = 0;
-  Node cursor = list;
-  while(!found && cursor != NULL){
-    if(strcmp(buffer, cursor->key) == 0){
+  Node value = cheak_for_key(list, buffer);
+  if(value != NULL){
       puts("Found entry:");
-      printf("key: %s\nvalue: %s\n", cursor->key, cursor->value);
-      found = 1;
-    }else{
-      cursor = cursor->next;
-    }
-  }
-  if(!found){
+      printf("key: %s\nvalue: %s\n", value->key, value->value);
+      
+  }else{
     printf("Could not find an entry matching key \"%s\"!\n", buffer);
   }
 }
@@ -210,7 +207,7 @@ int main(int argc, char *argv[]){
     while(getchar() != '\n'); // Clear stdin
     switch(choice){
     case 1:
-      query_key(list);
+      user_query_key(list);
       break;
     case 2:
       user_update_key(list);
