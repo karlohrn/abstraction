@@ -1,13 +1,12 @@
 #ifndef db_back
 #define db_back
-typedef struct node{
-  char *key;
-  char *value;
-  struct node *next;
-}*Node;
+
+typedef struct node *Node;
 
 void readline(char *dest, int n, FILE *source);
 void print_database(Node list);
+char* get_value_of_node(Node value);
+char* get_key_of_node(Node key);
 char* read_buffer();
 Node cheak_for_key(Node list, char* buffer);
 Node db_delete_key(Node list, char*key);

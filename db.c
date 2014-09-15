@@ -9,7 +9,7 @@ Node user_delete_key(Node list){
   puts("Searching database...\n");
   Node value = cheak_for_key(list, key);
   if(value != NULL){
-    char* old_value = value->value;
+    char* old_value = get_value_of_node(value);
     Node new_list = db_delete_key(list, key);
     printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, old_value);
     return new_list;
@@ -29,7 +29,7 @@ Node user_insert_key(Node list){
     Node newNode = db_insert_key(list, buffer);
     puts("");
     puts("Entry inserted successfully:");
-    printf("key: %s\nvalue: %s\n", newNode->key, newNode->value);
+    printf("key: %s\nvalue: %s\n", get_key_of_node(newNode), get_value_of_node(newNode));
     return newNode;
   }
   printf("key \"%s\" already exists!\n", buffer);
@@ -43,7 +43,7 @@ void user_update_key(Node list){
   puts("Searching database...\n");
   if(value != NULL){
     puts("Matching entry found:");
-    printf("key: %s\nvalue: %s\n\n", key, value->value);
+    printf("key: %s\nvalue: %s\n\n", key, get_value_of_node(value));
     printf("Enter new value: ");
     char* new_value = read_buffer();
     db_update_value(value, new_value);
@@ -60,7 +60,7 @@ void user_query_key(Node list){
   Node value = cheak_for_key(list, buffer);
   if(value != NULL){
       puts("Found entry:");
-      printf("key: %s\nvalue: %s\n", value->key, value->value);
+      printf("key: %s\nvalue: %s\n", get_key_of_node(value), get_value_of_node(value));
       
   }else{
     printf("Could not find an entry matching key \"%s\"!\n", buffer);
@@ -80,11 +80,7 @@ int main(int argc, char *argv[]){
   Node list = load_database(filename);
 
   // Main loop
-
-  for(int i = 10; i> 0; i--){
-    puts("hey");
-  }
-
+  
   int choice = -1;
   while(choice != 0){
     puts("Please choose an operation");

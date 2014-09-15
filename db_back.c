@@ -1,7 +1,14 @@
 #include <stdio.h>
+//#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "db_back.h"
+
+struct node{
+  char* key;
+  char* value;
+  struct node *next;
+};
 
 void readline(char *dest, int n, FILE *source){
   fgets(dest, n, source);
@@ -16,6 +23,23 @@ void print_database(Node list){
     puts(cursor->key);
     puts(cursor->value);
     cursor = cursor->next;
+  }
+}
+
+char* get_value_of_node(Node value){
+  if(value == NULL){
+    return NULL;
+  }else{
+    char* value_of_node = value->value;
+    return value_of_node;
+  }
+}
+char* get_key_of_node(Node key){
+  if(key == NULL){
+    return NULL;
+  }else{
+    char* key_of_node = key->key;
+    return key_of_node;
   }
 }
 
