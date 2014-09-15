@@ -3,6 +3,25 @@
 #include <string.h>
 #include "db_back.h"
 
+char* read_buffer(){
+  char* buffer = malloc(sizeof(char)*128);
+  readline(buffer, 127, stdin);
+  buffer[128] = '\0';
+  return buffer;
+}
+
+void welcome(){
+  puts("Welcome to");
+  puts(" ____    ____       ");
+  puts("/\\  _`\\ /\\  _`\\     ");
+  puts("\\ \\ \\/\\ \\ \\ \\L\\ \\   ");
+  puts(" \\ \\ \\ \\ \\ \\  _ <\\ ");
+  puts("  \\ \\ \\_\\ \\ \\ \\L\\ \\ ");
+  puts("   \\ \\____/\\ \\____/ ");
+  puts("    \\/___/  \\/___/  ");
+  puts("");
+}
+
 Node user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
