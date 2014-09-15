@@ -10,6 +10,7 @@ struct node{
   struct node *next;
 };
 
+
 void readline(char *dest, int n, FILE *source){
   fgets(dest, n, source);
   int len = strlen(dest);

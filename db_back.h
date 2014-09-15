@@ -2,7 +2,7 @@
 #define db_back
 
 typedef struct node *Node;
-void readline(char* dest, int n, FILE * source);
+void readline(char* dest, int n, FILE *source);
 void print_database(Node list);
 char* get_value_of_node(Node value);
 char* get_key_of_node(Node key);
