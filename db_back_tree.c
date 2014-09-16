@@ -37,19 +37,77 @@ char* get_key_of_node(Node key){
   }
 }
 
-Node cheak_for_key(Node list, char* buffer){
-  return list;
+Node cheak_for_key(Node tree, char* buffer){
+  int found = 0;
+  Node tmp_tree = tree;
+  Node prev = tree;
+  Node value = NULL;
+  if(tmp_tree == null){
+    return value;
+  }
+  while(tmp_tree != NULL && !found){
+    if(strcmp(tmp_tree->key, buffer)){
+      value = tmp_tree;
+      return value;
+    }
+    else{
+      if(tmp_tree->left != NULL){
+	prev = tmp_tree;
+	tmp_tree = tmp_tree->left;
+      }else{
+	if(tmp_tree->right != NULL){
+	  prev = tmp_tree;
+	  tmp_tree = tmp_tree->right;
+	}
+	else{
+	  tmp_tree = prev->right;
+	}
+      }
+    }
+  }
+  return value;
 }
 
-Node db_delete_key(Node list, char*key){
-  return list;
+
+Node db_delete_key(Node tree, char*key){
+  return tree;
 }
 
-Node db_insert_key(Node list, char* buffer){
-  return list;
+Node db_insert_key(Node tree, char* buffer){
+  Node newNode = malloc(sizeof(struct node));
+  newNode->key = malloc(strlen(buffer)+1);
+  strcpy(newNode->key, buffer);
+  readline(buffer, 128, stdin);
+  newNode->value = malloc(strlen(buffer)+1);
+  strcpy(newNode->value, buffer);
+  if(tree == NULL){
+    tree = newNode;
+  }else{
+    Node tmp_tree = tree;
+    while(tmp_tree){
+      if(tmp_tree->value > newNode-value){
+	tmp_tree = tmp_tree-left;
+      }else{
+	if(tmp_tree->value <= newNode->value){
+	  if(tmp_tree->value == newNode->value){
+	    return list;
+	  }else{
+	    tmp_tree = tmp_tree->right;
+	  }
+	}
+      }
+    }
+    tmp_tree = newNode;
+    tree = tmp_tree;
+  }
+  return tree;
 }
 
-void db_update_value(Node list, char* value){
+void db_update_value(Node tree, char* value){
+  Node cursor = tree;
+  free(cursor->value);
+  cursor->value = malloc(strlen(value) +1);
+  strcpy(cursor->value, value);
 }
 
 Node load_database(char *filename){
@@ -67,14 +125,14 @@ Node load_database(char *filename){
       tree = newNode;
     }else{
       Node tmp_tree = tree;
-      while(tmp_tree != NULL){
+      while(tmp_tree){
 	if(tmp_tree->value > newNode->value){
 	  tmp_tree = tmp_tree->left;
 	}else{
 	  if(tmp_tree->value <= newNode->value){
-	    if(tmp_tree->value == newNode->value)
-	      puts("allreaady have that value");
-	    else{ 
+	    if(tmp_tree->value == newNode->value){
+	      puts("all reaady have that value");
+	    }else{ 
 	      tmp_tree = tmp_tree->right;		  
 	    }
 	  }
