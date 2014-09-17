@@ -18,9 +18,20 @@ char* read_buffer(){
   return buffer;
 }
 
-void print_database(Node list){
+void print_database(Node tree){
+  if(tree == NULL){
+  }else{
+    puts(tree->key);
+    puts(tree->value);
+    if(tree->left != NULL){
+      print_database(tree->left);
+    }
+    if(tree->right != NULL){
+      print_database(tree->right);
+    }
+  }
 }
-
+  
 char* get_value_of_node(Node value){
   if(value == NULL){
     return NULL;
@@ -38,31 +49,16 @@ char* get_key_of_node(Node key){
 }
 
 Node cheak_for_key(Node tree, char* buffer){
-  int found = 0;
-  Node tmp_tree = tree;
-  Node prev = tree;
-  Node value = NULL;
-  if(tmp_tree == null){
-    return value;
-  }
-  while(tmp_tree != NULL && !found){
-    if(strcmp(tmp_tree->key, buffer)){
-      value = tmp_tree;
-      return value;
+  node value = NULL;
+  if(strcmp(tree->key, buffer) == 0){
+    value = tree;
+    return tree;
+  }else{
+    if(tree->left != NULL){
+      cheak_for_key(tree->left, buffer);
     }
-    else{
-      if(tmp_tree->left != NULL){
-	prev = tmp_tree;
-	tmp_tree = tmp_tree->left;
-      }else{
-	if(tmp_tree->right != NULL){
-	  prev = tmp_tree;
-	  tmp_tree = tmp_tree->right;
-	}
-	else{
-	  tmp_tree = prev->right;
-	}
-      }
+    if(tree->right != NULL){
+      cheak_for_key(tree->right, buffer);
     }
   }
   return value;
