@@ -3,13 +3,6 @@
 #include <string.h>
 #include "db_back.h"
 
-char* read_buffer(){
-  char* buffer = malloc(sizeof(char)*128);
-  readline(buffer, 127, stdin);
-  buffer[128] = '\0';
-  return buffer;
-}
-
 void welcome(){
   puts("Welcome to");
   puts(" ____    ____       ");
@@ -22,7 +15,14 @@ void welcome(){
   puts("");
 }
 
-Node user_delete_key(Node list){
+char* read_buffer(){
+  char* buffer = malloc(sizeof(char)*128);
+  readline(buffer, 127, stdin);
+  buffer[128] = '\0';
+  return buffer;
+}
+
+void user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
   puts("Searching database...\n");
@@ -31,28 +31,25 @@ Node user_delete_key(Node list){
     char* old_value = get_value_of_node(value);
     Node new_list = db_delete_key(list, key);
     printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, old_value);
-    return new_list;
   }else 
     printf("Could not find an entry matching key \"%s\"!\n", key);
-  return list;
 }
 
-Node user_insert_key(Node list){
+void user_insert_key(Node list){
   printf("Enter key: ");
-  char* buffer = read_buffer();
+  char* key = read_buffer();
   puts("Searching database for duplicate keys...");
   Node found  = cheak_for_key(list, buffer);
   if(found == NULL){
     puts("Key is unique!\n");
     printf("Enter value: ");
-    Node newNode = db_insert_key(list, buffer);
+    char* value = read_buffer();
+    Node newNode = db_insert_key(list, key, value);
     puts("");
     puts("Entry inserted successfully:");
     printf("key: %s\nvalue: %s\n", get_key_of_node(newNode), get_value_of_node(newNode));
-    return newNode;
   }
   printf("key \"%s\" already exists!\n", buffer);
-  return list;
 }
 
 void user_update_key(Node list){
@@ -120,10 +117,10 @@ int main(int argc, char *argv[]){
       user_update_key(list);
       break;
     case 3:
-      list = user_insert_key(list);
+      user_insert_key(list);
       break;
     case 4:
-      list = user_delete_key(list);
+      user_delete_key(list);
       break;
     case 5:
       print_database(list);

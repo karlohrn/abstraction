@@ -11,13 +11,6 @@ struct node{
   struct node *right;
 };
 
-char* read_buffer(){
-  char* buffer = malloc(sizeof(char)*128);
-  readline(buffer, 127, stdin);
-  buffer[128] = '\0';
-  return buffer;
-}
-
 void print_database(Node tree){
   if(tree == NULL){
   }else{
@@ -65,27 +58,65 @@ Node cheak_for_key(Node tree, char* buffer){
 }
 
 
-Node db_delete_key(Node tree, char*key){
+Node db_delete_key(Node tree, char* key){
+  Node prev = NULL;
+  if (tree == NULL){
+    return NULL;
+  }
+  else{
+    while(tree){
+      if(strcmp(tree->key, key) == 0){
+	Node tree_left = tree->left;
+	Node tree_right = tree->right;
+	free(tree);
+	reinsert(Tree_left, prev);
+	reinsert(Tree_right, prev);
+	
+      }else{
+	if(strcmp(tree->key, key) > 0){
+	  prev = tree;
+	  tree = tree->left;
+	}else{
+	  if(strcmp(tree->key, key) < 0){
+	    prev = tree;
+	    tree = tree->right;
+	  }
+	}
+      }
+    }
+  }  
   return tree;
 }
 
-Node db_insert_key(Node tree, char* buffer){
+void reinsert(Node deleted_tree, Node tree){
+  if(tree == NULL){
+  }else{
+    char* key = deleted_tree->key;
+    char* value = deleted_tree->value;
+    db_insert_key(tree, key, value);
+    tree_right = deleted_tree->right;
+    tree_left = deleted_tree->left;
+    reinsert(tree_right, tree);
+    reinsert(tree_left, tree);
+  }
+}
+
+Node db_insert_key(Node tree, char* key, char* value){
   Node newNode = malloc(sizeof(struct node));
-  newNode->key = malloc(strlen(buffer)+1);
-  strcpy(newNode->key, buffer);
-  readline(buffer, 128, stdin);
-  newNode->value = malloc(strlen(buffer)+1);
-  strcpy(newNode->value, buffer);
+  newNode->key = malloc(strlen(key)+1);
+  strcpy(newNode->key, key);
+  newNode->value = malloc(strlen(value)+1);
+  strcpy(newNode->value, value);
   if(tree == NULL){
     tree = newNode;
   }else{
     Node tmp_tree = tree;
     while(tmp_tree){
-      if(tmp_tree->value > newNode-value){
-	tmp_tree = tmp_tree-left;
+      if(strcmp(tmp_tree->key, newNode->key) > 0){
+	tmp_tree = tmp_tree->left;
       }else{
-	if(tmp_tree->value <= newNode->value){
-	  if(tmp_tree->value == newNode->value){
+	if(strcmp(tmp_tree->key, newNode->key) =< 0){
+	  if(tmp_tree->key == newNode->key){
 	    return list;
 	  }else{
 	    tmp_tree = tmp_tree->right;
@@ -108,35 +139,13 @@ void db_update_value(Node tree, char* value){
 
 Node load_database(char *filename){
   FILE *database = fopen(filename, "r");
-  char buffer[128];
+  char value[128];
+  char key[128];
   Node tree = NULL;
   while(!(feof(database))){
-    Node newNode = malloc(sizeof(struct node));
-    readline(buffer, 128, database);
-    newNode->key = malloc(strlen(buffer) + 1);
-    strcpy(newNode->key, buffer);
-    readline(buffer, 128, database);
-    strcpy(newNode->value, buffer);
-    if(tree == NULL){
-      tree = newNode;
-    }else{
-      Node tmp_tree = tree;
-      while(tmp_tree){
-	if(tmp_tree->value > newNode->value){
-	  tmp_tree = tmp_tree->left;
-	}else{
-	  if(tmp_tree->value <= newNode->value){
-	    if(tmp_tree->value == newNode->value){
-	      puts("all reaady have that value");
-	    }else{ 
-	      tmp_tree = tmp_tree->right;		  
-	    }
-	  }
-	}
-      }
-      tmp_tree = newNode;
-      tree = tmp_tree;
-    }
+    readline(key, 128, database);
+    readline(value, 128, database);
+    insert(tree, key, value); 
   }
   return tree;
 }
