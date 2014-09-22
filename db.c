@@ -15,6 +15,14 @@ void welcome(){
   puts("");
 }
 
+void readline(char* dest, int n, FILE *source){
+  fgets(dest, n, source);
+  int len = strlen(dest);
+  if(dest[len -1] == '\n')
+    dest[len -1] = '\0';
+
+}
+
 char* read_buffer(){
   char* buffer = malloc(sizeof(char)*128);
   readline(buffer, 127, stdin);
@@ -29,7 +37,7 @@ void user_delete_key(Node list){
   Node value = cheak_for_key(list, key);
   if(value != NULL){
     char* old_value = get_value_of_node(value);
-    Node new_list = db_delete_key(list, key);
+    db_delete_key(list, key);
     printf("Deleted the following entry:\nkey: %s\nvalue: %s", key, old_value);
   }else 
     printf("Could not find an entry matching key \"%s\"!\n", key);
@@ -39,7 +47,7 @@ void user_insert_key(Node list){
   printf("Enter key: ");
   char* key = read_buffer();
   puts("Searching database for duplicate keys...");
-  Node found  = cheak_for_key(list, buffer);
+  Node found  = cheak_for_key(list, key);
   if(found == NULL){
     puts("Key is unique!\n");
     printf("Enter value: ");
@@ -49,7 +57,7 @@ void user_insert_key(Node list){
     puts("Entry inserted successfully:");
     printf("key: %s\nvalue: %s\n", get_key_of_node(newNode), get_value_of_node(newNode));
   }
-  printf("key \"%s\" already exists!\n", buffer);
+  printf("key \"%s\" already exists!\n", key);
 }
 
 void user_update_key(Node list){

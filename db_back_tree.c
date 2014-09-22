@@ -42,10 +42,10 @@ char* get_key_of_node(Node key){
 }
 
 Node cheak_for_key(Node tree, char* buffer){
-  node value = NULL;
+  Node value = NULL;
   if(strcmp(tree->key, buffer) == 0){
     value = tree;
-    return tree;
+    return value;
   }else{
     if(tree->left != NULL){
       cheak_for_key(tree->left, buffer);
@@ -58,6 +58,23 @@ Node cheak_for_key(Node tree, char* buffer){
 }
 
 
+void reinsert(Node deleted_tree, Node tree){
+  if(tree == NULL){
+  }else{
+    char* key = deleted_tree->key;
+    char* value = deleted_tree->value;
+    db_insert_key(tree, key, value);
+    Node tree_right = deleted_tree->right;
+    Node tree_left = deleted_tree->left;
+    if(tree_right != NULL){
+    reinsert(tree_right, tree);
+    }
+    if(tree_left != NULL){
+    reinsert(tree_left, tree);
+    }
+  }
+}
+
 Node db_delete_key(Node tree, char* key){
   Node prev = NULL;
   if (tree == NULL){
@@ -69,8 +86,8 @@ Node db_delete_key(Node tree, char* key){
 	Node tree_left = tree->left;
 	Node tree_right = tree->right;
 	free(tree);
-	reinsert(Tree_left, prev);
-	reinsert(Tree_right, prev);
+	reinsert(tree_left, prev);
+	reinsert(tree_right, prev);
 	
       }else{
 	if(strcmp(tree->key, key) > 0){
@@ -88,19 +105,6 @@ Node db_delete_key(Node tree, char* key){
   return tree;
 }
 
-void reinsert(Node deleted_tree, Node tree){
-  if(tree == NULL){
-  }else{
-    char* key = deleted_tree->key;
-    char* value = deleted_tree->value;
-    db_insert_key(tree, key, value);
-    tree_right = deleted_tree->right;
-    tree_left = deleted_tree->left;
-    reinsert(tree_right, tree);
-    reinsert(tree_left, tree);
-  }
-}
-
 Node db_insert_key(Node tree, char* key, char* value){
   Node newNode = malloc(sizeof(struct node));
   newNode->key = malloc(strlen(key)+1);
@@ -115,11 +119,13 @@ Node db_insert_key(Node tree, char* key, char* value){
       if(strcmp(tmp_tree->key, newNode->key) > 0){
 	tmp_tree = tmp_tree->left;
       }else{
-	if(strcmp(tmp_tree->key, newNode->key) =< 0){
+	if(strcmp(tmp_tree->key, newNode->key) == 0){
 	  if(tmp_tree->key == newNode->key){
-	    return list;
+	    return tree;
 	  }else{
+	    if(strcmp(tmp_tree->key, newNode->key) < 0){
 	    tmp_tree = tmp_tree->right;
+	    }
 	  }
 	}
       }
@@ -145,7 +151,7 @@ Node load_database(char *filename){
   while(!(feof(database))){
     readline(key, 128, database);
     readline(value, 128, database);
-    insert(tree, key, value); 
+    tree = db_insert_key(tree, key, value); 
   }
   return tree;
 }
