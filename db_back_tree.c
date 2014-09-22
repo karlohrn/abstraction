@@ -16,11 +16,13 @@ void print_database(Node tree){
   }else{
     puts(tree->key);
     puts(tree->value);
-    if(tree->left != NULL){
-      print_database(tree->left);
+    Node tree_left = tree->left;
+    Node tree_right = tree->right;
+    if(tree_left != NULL){
+      print_database(tree_left);
     }
-    if(tree->right != NULL){
-      print_database(tree->right);
+    if(tree_right != NULL){
+      print_database(tree_right);
     }
   }
 }
@@ -105,35 +107,30 @@ Node db_delete_key(Node tree, char* key){
   return tree;
 }
 
-Node db_insert_key(Node tree, char* key, char* value){
+Node db_insert_key(Node *tree, char* key, char* value){
   Node newNode = malloc(sizeof(struct node));
   newNode->key = malloc(strlen(key)+1);
   strcpy(newNode->key, key);
   newNode->value = malloc(strlen(value)+1);
   strcpy(newNode->value, value);
-  if(tree == NULL){
-    tree = newNode;
-  }else{
-    Node tmp_tree = tree;
+  if(*tree == NULL){
+    *tree = newNode;
+    return *tree;
+  }
+  Node tmp_tree = *tree;
     while(tmp_tree){
       if(strcmp(tmp_tree->key, newNode->key) > 0){
 	tmp_tree = tmp_tree->left;
-      }else{
-	if(strcmp(tmp_tree->key, newNode->key) == 0){
-	  if(tmp_tree->key == newNode->key){
-	    return tree;
-	  }else{
-	    if(strcmp(tmp_tree->key, newNode->key) < 0){
-	    tmp_tree = tmp_tree->right;
-	    }
-	  }
+      }else if(strcmp(tmp_tree->key, newNode->key) == 0){
+	  return tree;
 	}
-      }
+      else{
+	tmp_tree = tmp_tree->right;
+	}
     }
     tmp_tree = newNode;
-    tree = tmp_tree;
-  }
-  return tree;
+    *tree = tmp_tree;
+    return *tree;
 }
 
 void db_update_value(Node tree, char* value){
@@ -151,7 +148,12 @@ Node load_database(char *filename){
   while(!(feof(database))){
     readline(key, 128, database);
     readline(value, 128, database);
-    tree = db_insert_key(tree, key, value); 
+    if(tree == NULL){
+    tree = db_insert_key(tree, key, value);
+    }
+    else{
+      db_insert_key(tree, key, value);
+    }
   }
   return tree;
 }
