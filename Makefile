@@ -2,16 +2,19 @@ CC= gcc
 FLAGS= -ggdb -Wall -std=c99
 
 
-main:	db.o db_back.o db_back_tree.o
-	$(CC) -g db_back.o db.o -o main
+main_tree:	db.o db_back_tree.o
+	$(CC) -g db_back_tree.o db.o -o main_tree
 
-db_back.o: db_back.c db_back.h
+main_list:	db.o db_back.o
+	$(CC) -g db_back.o db.o -o main_list
+
+db_back.o:	db_back.c db_back.h
 	$(CC) $(FLAGS) -c db_back.c
 
-db.o: 	db.c db_back.h 
+db.o:	db.c db_back.h 
 	$(CC) $(FLAGS) -c db.c     
 
-db_back_tree.o: db_back_tree.c db_back.h
+db_back_tree.o:	db_back_tree.c db_back.h
 	$(CC) $(FLAGS) -c db_back_tree.c
 
 clean:
