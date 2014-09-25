@@ -65,7 +65,7 @@ void reinsert(Node deleted_tree, Node tree){
   }else{
     char* key = deleted_tree->key;
     char* value = deleted_tree->value;
-    db_insert_key(tree, key, value);
+    db_insert_key(&tree, key, value);
     Node tree_right = deleted_tree->right;
     Node tree_left = deleted_tree->left;
     if(tree_right != NULL){
@@ -107,17 +107,18 @@ Node db_delete_key(Node tree, char* key){
   return tree;
 }
 
-Node db_insert_key(Node *tree, char* key, char* value){
+Node db_insert_key(Node *tree_node, char* key, char* value){
+  Node tree = *tree_node;
   Node newNode = malloc(sizeof(struct node));
   newNode->key = malloc(strlen(key)+1);
   strcpy(newNode->key, key);
   newNode->value = malloc(strlen(value)+1);
   strcpy(newNode->value, value);
-  if(*tree == NULL){
-    *tree = newNode;
-    return *tree;
-  }
-  Node tmp_tree = *tree;
+  if(tree == NULL){
+    tree = newNode;
+    return tree;
+  }else{
+  Node tmp_tree = tree;
     while(tmp_tree){
       if(strcmp(tmp_tree->key, newNode->key) > 0){
 	tmp_tree = tmp_tree->left;
@@ -129,8 +130,9 @@ Node db_insert_key(Node *tree, char* key, char* value){
 	}
     }
     tmp_tree = newNode;
-    *tree = tmp_tree;
-    return *tree;
+    tree = tmp_tree;
+    return tree;
+  }
 }
 
 void db_update_value(Node tree, char* value){
@@ -149,10 +151,10 @@ Node load_database(char *filename){
     readline(key, 128, database);
     readline(value, 128, database);
     if(tree == NULL){
-    tree = db_insert_key(tree, key, value);
+    tree = db_insert_key(&tree, key, value);
     }
     else{
-      db_insert_key(tree, key, value);
+      db_insert_key(&tree, key, value);
     }
   }
   return tree;

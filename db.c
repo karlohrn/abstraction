@@ -52,7 +52,7 @@ void user_insert_key(Node list){
     puts("Key is unique!\n");
     printf("Enter value: ");
     char* value = read_buffer();
-    Node newNode = db_insert_key(list, key, value);
+    Node newNode = db_insert_key(&list, key, value);
     puts("");
     puts("Entry inserted successfully:");
     printf("key: %s\nvalue: %s\n", get_key_of_node(newNode), get_value_of_node(newNode));
