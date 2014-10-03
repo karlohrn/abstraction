@@ -1,5 +1,5 @@
 CC= gcc
-FLAGS= -ggdb -Wall -std=c99
+FLAGS= -ggdb -Wall -std=c99 -Werror
 
 
 main_tree:	db.o db_back_tree.o
@@ -7,6 +7,9 @@ main_tree:	db.o db_back_tree.o
 
 main_list:	db.o db_back.o
 	$(CC) -g db_back.o db.o -o main_list
+
+%.o: %.c %.h
+	$(CC) $(FLAGS) -c $< -o $@
 
 db_back.o:	db_back.c db_back.h
 	$(CC) $(FLAGS) -c db_back.c
