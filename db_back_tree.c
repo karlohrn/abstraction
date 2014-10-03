@@ -58,15 +58,11 @@ Node search_for_key(Node tree, char* key){
 void reinsert(Node deleted_tree, Node tree){ 
   if(deleted_tree == NULL){
   }else{
-    printf("%i\n", __LINE__);
     db_insert_key(tree, deleted_tree->key, deleted_tree->value);
-    printf("%i\n", __LINE__);
     if(deleted_tree->right){
-      printf("%i\n", __LINE__);
       reinsert(deleted_tree->right, tree);
     }
     if(deleted_tree->left){
-      printf("%i\n", __LINE__);
       reinsert(deleted_tree->left, tree);
     }
   }
