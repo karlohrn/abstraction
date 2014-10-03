@@ -37,14 +37,14 @@ char* get_key_of_node(Node key){
     return key->key;
   }
 }
-
+/*
 Node find_min(Node tree){
   if (tree->left != NULL){
     return find_min(tree->left);
   }
   return tree;
 }
-
+*/
 Node search_for_key(Node tree, char* key){
   if(strcmp(tree->key, key) == 0){
     return tree;
@@ -138,7 +138,7 @@ Node new_node(char* key, char* value){
   strcpy(the_node->value, value);
   return the_node;
 }
-
+/*
 void db_insert_key(Node tree, char* key, char* value){
   
   if (tree == NULL){
@@ -170,8 +170,8 @@ void db_insert_key(Node tree, char* key, char* value){
   }
   return;
 }
+*/
 
-/*
 void db_insert_key(Node tree_node, char* key, char* value){
   if(tree_node->key == NULL){
     tree_node->key = malloc(strlen(key)+1);
@@ -203,7 +203,7 @@ void db_insert_key(Node tree_node, char* key, char* value){
     }
   }
 }
-*/
+
 
 /*
   Uppdaterar värdet på en node i trädet.
