@@ -1,5 +1,4 @@
 #include <stdio.h>
-//#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "db_back.h"
@@ -37,6 +36,13 @@ char* get_key_of_node(Node key){
   }else{
     return key->key;
   }
+}
+
+Node find_min(Node tree){
+  if (tree->left != NULL){
+    return find_min(tree->left);
+  }
+  return tree;
 }
 
 Node search_for_key(Node tree, char* key){
@@ -133,6 +139,39 @@ Node new_node(char* key, char* value){
   return the_node;
 }
 
+void db_insert_key(Node tree, char* key, char* value){
+  
+  if (tree == NULL){
+    tree = new_node(key, value);
+    return;
+  }
+  if (tree->key == NULL){
+    tree->key = malloc(strlen(key)+1);
+    strcpy(tree->key, key);
+    tree->value = malloc(strlen(value)+1);
+    strcpy(tree->value, value);
+    return;
+  }
+  if (strcmp(tree->key, key) > 0){
+    if(tree->left == NULL){
+      tree->left = new_node(key, value);
+    }else{
+      db_insert_key(tree->left, key, value);
+    }
+    return;
+  }
+  else if (strcmp(tree->key, key) < 0){
+    if (tree->right == NULL){
+      tree->right = new_node(key, value);
+    }else{
+      db_insert_key(tree->right, key, value);
+    }  
+    return;
+  }
+  return;
+}
+
+/*
 void db_insert_key(Node tree_node, char* key, char* value){
   if(tree_node->key == NULL){
     tree_node->key = malloc(strlen(key)+1);
@@ -164,6 +203,7 @@ void db_insert_key(Node tree_node, char* key, char* value){
     }
   }
 }
+*/
 
 /*
   Uppdaterar värdet på en node i trädet.
