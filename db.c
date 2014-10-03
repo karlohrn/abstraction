@@ -34,7 +34,7 @@ void user_delete_key(Node list){
   printf("Enter key:");
   char* key = read_buffer();
   puts("Searching database...\n");
-  Node value = cheak_for_key(list, key);
+  Node value = search_for_key(list, key);
   if(value != NULL){
     char* old_value = get_value_of_node(value);
     db_delete_key(list, key);
@@ -47,23 +47,24 @@ void user_insert_key(Node list){
   printf("Enter key: ");
   char* key = read_buffer();
   puts("Searching database for duplicate keys...");
-  Node found  = cheak_for_key(list, key);
+  Node found  = search_for_key(list, key);
   if(found == NULL){
     puts("Key is unique!\n");
     printf("Enter value: ");
     char* value = read_buffer();
-    Node newNode = db_insert_key(&list, key, value);
+    db_insert_key(list, key, value);
     puts("");
     puts("Entry inserted successfully:");
-    printf("key: %s\nvalue: %s\n", get_key_of_node(newNode), get_value_of_node(newNode));
+    printf("key: %s\nvalue: %s\n", key, value);
+  }else{
+    printf("key \"%s\" already exists!\n", key);
   }
-  printf("key \"%s\" already exists!\n", key);
 }
 
 void user_update_key(Node list){
   printf("Enter key: ");
   char* key = read_buffer();
-  Node value = cheak_for_key(list, key);
+  Node value = search_for_key(list, key);
   puts("Searching database...\n");
   if(value != NULL){
     puts("Matching entry found:");
@@ -81,7 +82,7 @@ void user_query_key(Node list){
   printf("Enter key: ");
   char* buffer = read_buffer();
   puts("Searching database...\n");
-  Node value = cheak_for_key(list, buffer);
+  Node value = search_for_key(list, buffer);
   if(value != NULL){
       puts("Found entry:");
       printf("key: %s\nvalue: %s\n", get_key_of_node(value), get_value_of_node(value));
