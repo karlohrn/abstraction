@@ -44,67 +44,81 @@ Node search_for_key(Node tree, char* key){
     return tree;
   }else{
     if(tree->left != NULL){
-     Node value = search_for_key(tree->left, key);
+      Node value = search_for_key(tree->left, key);
       if(value) return value;
     }
     if(tree->right != NULL){
-     return search_for_key(tree->right, key);
+      return search_for_key(tree->right, key);
     }
   }
   return NULL;
 }
 
-
-void reinsert(Node deleted_tree, Node tree){ 
-  if(deleted_tree == NULL){
-  }else{
-    db_insert_key(tree, deleted_tree->key, deleted_tree->value);
-    if(deleted_tree->right){
-      reinsert(deleted_tree->right, tree);
-    }
-    if(deleted_tree->left){
-      reinsert(deleted_tree->left, tree);
-    }
-  }
-}
-
-Node db_delete_key(Node tree, char* key){
+void db_delete_key(Node tree, char* key){
   Node prev = NULL;
-  if (tree == NULL){
-    return NULL;
-  }
-  else{
-    while(tree){
-      if(strcmp(tree->key, key) == 0){
-	Node tree_left = tree->left;
-	Node tree_right = tree->right;
-	if(prev){
-	  if(strcmp(prev->key, key) > 0){
-	    prev->left = NULL;
-	  }else{
-	    prev->right = NULL;
-	  }
-	}
-	free(tree);
-	reinsert(tree_left, prev);
-	reinsert(tree_right, prev);
-	break;
-      }else{
-	if(strcmp(tree->key, key) > 0){
-	  prev = tree;
-	  tree = tree->left;
-	}else{
-	  if(strcmp(tree->key, key) < 0){
-	    prev = tree;
-	    tree = tree->right;
-	  }
-	}
-      }
+  while(tree){
+    if(strcmp(tree->key, key) < 0){
+      prev = tree;
+      tree = tree->right;
+    }else if(strcmp(tree->key, key) > 0){
+      prev = tree;
+      tree = tree->left;
+    }else{
+      break;
     }
-  }  
-  return tree;
-}
+  }
 
+  // Not found.
+  if (tree == NULL)
+    return;
+
+  // Fall 3. två barn vvvvv  
+  if(tree->left != NULL && tree->right != NULL){
+    Node tmp_tree = tree->left;
+    while(tmp_tree->right != NULL){
+      tmp_tree = tmp_tree->right;
+    }
+    char* value = tree->value;
+    tree->key = tmp_tree->key;
+    tree->value = tmp_tree->value;
+    tmp_tree->key = key;
+    tmp_tree->value = value;
+    db_delete_key(tree->right, key);
+  }
+  // Fall 2. ett barn
+  else if(tree->left == NULL && tree->right != NULL){
+    if(strcmp(prev->key, tree->key) < 0){
+      prev->right = tree->right;
+      free(tree);
+    }else{
+      prev->left = tree->right;
+      free(tree);
+    }
+  }
+  // Fall 2. ett barn
+  else if(tree->left != NULL && tree->right == NULL){
+    if(strcmp(prev->key, tree->key) < 0){
+      prev->right = tree->left;
+    }else{
+      prev->left = tree->left;
+    }
+  }else{
+    // Fall 1. noll barn
+    if(prev == NULL){
+      tree->key = NULL;
+      tree->value = NULL;
+    }else if(strcmp(prev->key, tree->key) < 0){
+      puts("hej");
+      prev->right = NULL;
+      puts("1");
+      free(tree);
+      puts("2");
+    }else{
+      prev->left = NULL;
+      free(tree);
+    }
+  }
+}
 
 Node make_tree_empty(){
   return calloc(sizeof(struct node), 1);
@@ -133,7 +147,7 @@ void db_insert_key(Node tree_node, char* key, char* value){
 	  tree_node->left = newNode;
 	  break;
 	}else{
-	tree_node = tree_node->left;
+	  tree_node = tree_node->left;
 	}
       }else if(strcmp(tree_node->key, key) == 0){
 	break;
@@ -151,13 +165,25 @@ void db_insert_key(Node tree_node, char* key, char* value){
   }
 }
 
+/*
+  Uppdaterar värdet på en node i trädet.
+  tar in noden den väl ändre på tar bort värdet och allocelar nytt mine och skriver in ett ny värde.
+
+  skriven av Karl Öhrn 
+*/
+
 void db_update_value(Node tree, char* value){
-  Node cursor = tree;
-  free(cursor->value);
-  cursor->value = malloc(strlen(value) +1);
-  strcpy(cursor->value, value);
+  free(tree->value);
+  tree->value = malloc(strlen(value) +1);
+  strcpy(tree->value, value);
 }
 
+/*
+  laddar in databasen genom att anropa inster funktionen med data den hämtar från en fil.
+  Den tar in datan som ska lagras i data strukturen från filename.
+
+  Skriven av Karl Öhrn
+*/
 
 Node load_database(char *filename){
   FILE *database = fopen(filename, "r");
