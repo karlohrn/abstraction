@@ -37,14 +37,73 @@ char* get_key_of_node(Node key){
     return key->key;
   }
 }
-/*
+
+
 Node find_min(Node tree){
   if (tree->left != NULL){
     return find_min(tree->left);
   }
   return tree;
 }
-*/
+
+
+void db_delete_key(Node node, char* key){
+  Node previus = NULL;
+  // Om träd finns
+  while (node){
+    if (strcmp(node->key, key) < 0){
+      previus = node;
+      node = node->right;
+    }
+    else if (strcmp(node->key, key) > 0){
+      previus = node;
+      node = node->left;
+    }
+    else{
+      break;
+    }
+  }
+  // Fall 0 barn
+  if (node->left && node->right == NULL){
+    node->key = NULL;
+    node->value = NULL;
+    free(node);
+    return;
+  }
+  // Fall 1 barn
+  else if (node->left == NULL){
+    if(strcmp(previus->key, key) < 0){
+      previus->left = node->right;
+      free(node);
+    }else{
+      previus->right = node->right;
+      free(node);
+    }
+  }
+  else if (node->right == NULL){
+    if (strcmp(previus->key, key) < 0){
+      previus->left = node->left;
+      free(node);
+    }else{
+      previus->right = node->left;
+      free(node);
+    }
+  }
+  // Fall 2 barn
+  else if (node->left != NULL && node->right != NULL){
+    Node tmp_node = node->right;
+    tmp_node = find_min(tmp_node);
+    node->key = tmp_node->key;
+    char* value = node->value;
+    node->value = tmp_node->value;
+    tmp_node->key = key;
+    tmp_node->value = value;
+    db_delete_key(node, key);
+  }
+} 
+
+
+
 Node search_for_key(Node tree, char* key){
   if(strcmp(tree->key, key) == 0){
     return tree;
@@ -59,73 +118,74 @@ Node search_for_key(Node tree, char* key){
   }
   return NULL;
 }
-
-void db_delete_key(Node tree, char* key){
+/*
+  void db_delete_key(Node tree, char* key){
   Node prev = NULL;
   while(tree){
-    if(strcmp(tree->key, key) < 0){
-      prev = tree;
-      tree = tree->right;
-    }else if(strcmp(tree->key, key) > 0){
-      prev = tree;
-      tree = tree->left;
-    }else{
-      break;
-    }
+  if(strcmp(tree->key, key) < 0){
+  prev = tree;
+  tree = tree->right;
+  }else if(strcmp(tree->key, key) > 0){
+  prev = tree;
+  tree = tree->left;
+  }else{
+  break;
+  }
   }
 
   // Not found.
   if (tree == NULL)
-    return;
+  return;
 
   // Fall 3. två barn vvvvv  
   if(tree->left != NULL && tree->right != NULL){
-    Node tmp_tree = tree->left;
-    while(tmp_tree->right != NULL){
-      tmp_tree = tmp_tree->right;
-    }
-    char* value = tree->value;
-    tree->key = tmp_tree->key;
-    tree->value = tmp_tree->value;
-    tmp_tree->key = key;
-    tmp_tree->value = value;
-    db_delete_key(tree->right, key);
+  Node tmp_tree = tree->left;
+  while(tmp_tree->right != NULL){
+  tmp_tree = tmp_tree->right;
+  }
+  char* value = tree->value;
+
+  tree->key = tmp_tree->key;
+  tree->value = tmp_tree->value;
+  tmp_tree->key = key;
+  tmp_tree->value = value;
+  db_delete_key(tree->right, key);
   }
   // Fall 2. ett barn
   else if(tree->left == NULL && tree->right != NULL){
-    if(strcmp(prev->key, tree->key) < 0){
-      prev->right = tree->right;
-      free(tree);
-    }else{
-      prev->left = tree->right;
-      free(tree);
-    }
+  if(strcmp(prev->key, tree->key) < 0){
+  prev->right = tree->right;
+  free(tree);
+  }else{
+  prev->left = tree->right;
+  free(tree);
+  }
   }
   // Fall 2. ett barn
   else if(tree->left != NULL && tree->right == NULL){
-    if(strcmp(prev->key, tree->key) < 0){
-      prev->right = tree->left;
-    }else{
-      prev->left = tree->left;
-    }
+  if(strcmp(prev->key, tree->key) < 0){
+  prev->right = tree->left;
   }else{
-    // Fall 1. noll barn
-    if(prev == NULL){
-      tree->key = NULL;
-      tree->value = NULL;
-    }else if(strcmp(prev->key, tree->key) < 0){
-      puts("hej");
-      prev->right = NULL;
-      puts("1");
-      free(tree);
-      puts("2");
-    }else{
-      prev->left = NULL;
-      free(tree);
-    }
+  prev->left = tree->left;
   }
-}
-
+  }else{
+  // Fall 1. noll barn
+  if(prev == NULL){
+  tree->key = NULL;
+  tree->value = NULL;
+  }else if(strcmp(prev->key, tree->key) < 0){
+  puts("hej");
+  prev->right = NULL;
+  puts("1");
+  free(tree);
+  puts("2");
+  }else{
+  prev->left = NULL;
+  free(tree);
+  }
+  }
+  }
+*/
 Node make_tree_empty(){
   return calloc(sizeof(struct node), 1);
 }
@@ -139,37 +199,37 @@ Node new_node(char* key, char* value){
   return the_node;
 }
 /*
-void db_insert_key(Node tree, char* key, char* value){
+  void db_insert_key(Node tree, char* key, char* value){
   
   if (tree == NULL){
-    tree = new_node(key, value);
-    return;
+  tree = new_node(key, value);
+  return;
   }
   if (tree->key == NULL){
-    tree->key = malloc(strlen(key)+1);
-    strcpy(tree->key, key);
-    tree->value = malloc(strlen(value)+1);
-    strcpy(tree->value, value);
-    return;
+  tree->key = malloc(strlen(key)+1);
+  strcpy(tree->key, key);
+  tree->value = malloc(strlen(value)+1);
+  strcpy(tree->value, value);
+  return;
   }
   if (strcmp(tree->key, key) > 0){
-    if(tree->left == NULL){
-      tree->left = new_node(key, value);
-    }else{
-      db_insert_key(tree->left, key, value);
-    }
-    return;
-  }
-  else if (strcmp(tree->key, key) < 0){
-    if (tree->right == NULL){
-      tree->right = new_node(key, value);
-    }else{
-      db_insert_key(tree->right, key, value);
-    }  
-    return;
+  if(tree->left == NULL){
+  tree->left = new_node(key, value);
+  }else{
+  db_insert_key(tree->left, key, value);
   }
   return;
-}
+  }
+  else if (strcmp(tree->key, key) < 0){
+  if (tree->right == NULL){
+  tree->right = new_node(key, value);
+  }else{
+  db_insert_key(tree->right, key, value);
+  }  
+  return;
+  }
+  return;
+  }
 */
 
 void db_insert_key(Node tree_node, char* key, char* value){
