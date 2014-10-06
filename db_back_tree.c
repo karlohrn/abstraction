@@ -9,6 +9,14 @@ struct node{
   struct node *left;
   struct node *right;
 };
+/*
+D9
+I22
+M37
+*/
+/*
+rekuserar igenom hela trädet och skriver ut det.
+*/
 
 void print_database(Node tree){
   if(tree == NULL){
@@ -22,6 +30,10 @@ void print_database(Node tree){
   }
 }
   
+/*
+retunerar value på noden
+*/
+
 char* get_value_of_node(Node value){
   if(value == NULL){
     return NULL;
@@ -29,6 +41,10 @@ char* get_value_of_node(Node value){
     return value->value;
   }
 }
+
+/*
+retunerar nycken på noden
+*/
 
 char* get_key_of_node(Node key){
   if(key == NULL){
@@ -45,8 +61,39 @@ Node find_min(Node tree){
   return tree;
 }
 */
+
+/*
+letar i träddet tills den antigen hittar noden eller retunerar null om den inte finns.
+
+in data 
+Node tree
+char* key
+
+ut data
+node value om den hittar noden
+annars
+NULL om noden inte fanns
+*/
+
 Node search_for_key(Node tree, char* key){
-  if(strcmp(tree->key, key) == 0){
+  if(tree == NULL){ 
+    return NULL;
+  }else while(tree){
+      if(strcmp(tree->key, key) == 0){
+	return tree;
+      }else if(strcmp(tree->key, key) < 0){
+	tree = tree->right;
+      }else{
+	tree = tree->left;
+      }
+    }
+  return NULL;
+}
+/*
+Node search_for_key(Node tree, char* key){
+  if(tree == NULL){
+    return NULL;
+  }else if(strcmp(tree->key, key) == 0){
     return tree;
   }else{
     if(tree->left != NULL){
@@ -54,11 +101,24 @@ Node search_for_key(Node tree, char* key){
       if(value) return value;
     }
     if(tree->right != NULL){
-      return search_for_key(tree->right, key);
+      Node value =search_for_key(tree->right, key);
+      if(value) return value;
     }
   }
   return NULL;
 }
+*/
+/*
+db_delete_key går igenom trädet tills den hittar rätt node som man vill ta bort, där efter beror det på vilket fall noden är i om den har noll, ett eller 2 barn beroende på vad den gör. vid två barn bytter den plats med barnet ett steg till höger och sen så långt ner i vänstra trädet som möjligt, efter det rekuserar den om i funktionen.
+
+om noden man försöker ta bort bara har ett barn pekar funktionen om noden innan till att peka på nästa barn och sen kör den free på node man ville tabort.
+
+om barnet inte har något barn kör funktionen free på noden.
+
+in data
+Node tree
+char* key 
+*/
 
 void db_delete_key(Node tree, char* key){
   Node prev = NULL;
@@ -89,15 +149,20 @@ void db_delete_key(Node tree, char* key){
     tree->value = tmp_tree->value;
     tmp_tree->key = key;
     tmp_tree->value = value;
-    db_delete_key(tree->right, key);
+    db_delete_key(tree, key);
   }
   // Fall 2. ett barn
   else if(tree->left == NULL && tree->right != NULL){
     if(strcmp(prev->key, tree->key) < 0){
       prev->right = tree->right;
+      tree->left = NULL;
+      tree->left = NULL;
+      tree->right = NULL;
       free(tree);
     }else{
       prev->left = tree->right;
+      tree->left = NULL;
+      tree->right = NULL;
       free(tree);
     }
   }
@@ -105,30 +170,59 @@ void db_delete_key(Node tree, char* key){
   else if(tree->left != NULL && tree->right == NULL){
     if(strcmp(prev->key, tree->key) < 0){
       prev->right = tree->left;
+      tree->left = NULL;
+      tree->right = NULL;
+      free(tree);
     }else{
       prev->left = tree->left;
+      tree->left = NULL;
+      tree->right = NULL;
+      free(tree);
     }
   }else{
     // Fall 1. noll barn
     if(prev == NULL){
       tree->key = NULL;
       tree->value = NULL;
+      tree->left = NULL;
+      tree->right = NULL;
     }else if(strcmp(prev->key, tree->key) < 0){
-      puts("hej");
       prev->right = NULL;
-      puts("1");
+      tree->left = NULL;
+      tree->right = NULL;
       free(tree);
-      puts("2");
     }else{
       prev->left = NULL;
+      tree->left = NULL;
+      tree->right = NULL;
       free(tree);
     }
   }
 }
 
+/*
+make_tree_empyt skpar en tom trä nod som den sen retunerar
+
+in data 
+ut data 
+Node tom_node
+*/
+
 Node make_tree_empty(){
   return calloc(sizeof(struct node), 1);
 }
+
+/*
+funktionen new_node tar in en nykel och ett värde som den allocerar minne för på heapen och läger in värdet och nycklen i träd noden. vilket den sen retunerar.
+
+in data 
+char* key
+char* value
+
+ut data
+Node noden_du_har_skapat
+
+*/
 
 Node new_node(char* key, char* value){
   Node the_node = malloc(sizeof(struct node));
@@ -172,8 +266,20 @@ void db_insert_key(Node tree, char* key, char* value){
 }
 */
 
+/*
+insert funktionen tar in en träd node, nyckle och value. Går igenom trädet tills den hittar en ledding plats att läga in den nya noden och allocerar mine och lägger in det
+
+Den måste alltid ha ett träd att läga in data i även om trädet skulle vara tomt.
+
+in data 
+Node tree (i det trädet du skulle vilja läga in den nya noden, får inte vara NULL)
+char* key (det nya nycklen)
+char* value (det nya värdet)
+*/
+
 void db_insert_key(Node tree_node, char* key, char* value){
-  if(tree_node->key == NULL){
+  if(tree_node == NULL){
+  }else if(tree_node->key == NULL){
     tree_node->key = malloc(strlen(key)+1);
     strcpy(tree_node->key, key);
     tree_node->value = malloc(strlen(value)+1);
@@ -206,21 +312,34 @@ void db_insert_key(Node tree_node, char* key, char* value){
 
 
 /*
-  Uppdaterar värdet på en node i trädet.
-  tar in noden den väl ändre på tar bort värdet och allocelar nytt mine och skriver in ett ny värde.
+  Uppdaterar värdet på en node i trädet. Genom att först avallocera värdet på noden, där efter allocera nytt och läga in det nya värdet.
+
+in data 
+Noden tree (den noden man vill uppdatera värdet på)
+char* value (det nya värdet)
+
+ut data 
+den retunerar inget
 
   skriven av Karl Öhrn 
 */
 
 void db_update_value(Node tree, char* value){
+  if(tree == NULL){
+  }else 
   free(tree->value);
   tree->value = malloc(strlen(value) +1);
   strcpy(tree->value, value);
 }
 
 /*
-  laddar in databasen genom att anropa inster funktionen med data den hämtar från en fil.
-  Den tar in datan som ska lagras i data strukturen från filename.
+  laddar in databasen genom att anropa inster funktionen med data den hämtar från en fil. Lägger in alla nycklar och värden i en trädstruktur. Funktionen ger tillbaka en Node pekare till rotten i trädet.
+
+in data är
+Char* filename
+
+ut data är
+Node tree
 
   Skriven av Karl Öhrn
 */
